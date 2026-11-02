@@ -1,0 +1,29 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GA4 and E-commerce Funnel Analysis | Adnan Rana</title><meta name="description" content="Session and funnel analysis from the GA4 BigQuery export to find conversion leakage and reconcile revenue.">
+<meta property="og:title" content="GA4 and E-commerce Funnel Analysis | Adnan Rana"><meta property="og:description" content="Session and funnel analysis from the GA4 BigQuery export to find conversion leakage and reconcile revenue."><meta property="og:type" content="website"><meta property="og:url" content="https://your-username.github.io/portfolio/projects/ga4-funnel-analysis.html">
+<link rel="canonical" href="https://your-username.github.io/portfolio/projects/ga4-funnel-analysis.html"><link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css"></head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav"><div class="wrap nav-in"><a class="brand" href="../index.html">Adnan Rana</a>
+<button class="burger" aria-label="Toggle menu" aria-expanded="false" aria-controls="menu"><i data-lucide="menu"></i></button>
+<nav id="menu"><a href="../index.html#home">Home</a><a href="../index.html#expertise">Expertise</a><a href="../index.html#projects">Projects</a><a href="../index.html#about">About</a><a href="../index.html#contact">Contact</a>
+<a class="btn small" href="../assets/documents/CV.pdf" download>Download CV</a></nav></div></header><main id="main"><section class="wrap case"><a class="back" href="../index.html#projects">Back to projects</a><h1>GA4 and E-commerce Funnel Analysis</h1><p class="lede">Session and funnel analysis from the GA4 BigQuery export to find conversion leakage and reconcile revenue.</p>
+<p class="note">All data on this page is synthetic and illustrative. It demonstrates the method; it is not client data and the figures are not results.</p>
+<h2>Business context</h2><p>An online store sees traffic rise while conversion rate falls, and the GA4 interface does not explain where users drop.</p><h2>Problem statement</h2><p>The GA4 UI samples and thresholds data, sessions are hard to rebuild, and purchase revenue does not match the order system.</p>
+<h2>Data sources</h2><ul><li>GA4 BigQuery export (events_*)</li><li>Order system extract for revenue comparison</li></ul><h2>Data architecture</h2><p>Raw events are flattened into a session table (user_pseudo_id + ga_session_id), then into a funnel table with one row per session and a flag for each step.</p>
+<h2>Technical implementation</h2><p>Event parameters are unnested in SQL. Steps follow GA4 e-commerce events: view_item, add_to_cart, begin_checkout, purchase. Results are cut by device, channel and landing page.</p><h2>SQL methodology</h2><pre><code>-- session funnel (illustrative)
+WITH s AS (
+ SELECT user_pseudo_id,
+  (SELECT value.int_value FROM UNNEST(event_params) WHERE key=&#x27;ga_session_id&#x27;) AS sid,
+  event_name
+ FROM `project.analytics_XXXX.events_*`
+ WHERE _TABLE_SUFFIX BETWEEN &#x27;20260101&#x27; AND &#x27;20260131&#x27;)
+SELECT COUNTIF(event_name=&#x27;view_item&#x27;) AS viewed,
+  COUNT(DISTINCT IF(event_name=&#x27;add_to_cart&#x27;, CONCAT(user_pseudo_id,sid), NULL)) AS carted,
+  COUNT(DISTINCT IF(event_name=&#x27;purchase&#x27;, CONCAT(user_pseudo_id,sid), NULL)) AS purchased
+FROM s;</code></pre>
+<h2>Analytical outputs</h2><ul><li>Step-to-step conversion and drop-off by segment</li><li>GA4 purchase revenue versus orders by day</li></ul><h2>Key findings</h2><ul><li>In this synthetic example, the largest drop is between cart and checkout on mobile.</li><li>Duplicate purchase events inflate GA4 revenue unless deduplicated by transaction_id.</li></ul><h2>Business recommendations</h2><ul><li>Fix event duplication first, then prioritise the largest segment drop-off for testing.</li><li>Track a daily GA4-to-orders ratio as a health check.</li></ul>
+<h2>Limitations and assumptions</h2><p>GA4 export excludes users who decline consent unless Consent Mode modelling is used, and modelled data is not in the export. Funnel steps depend on correct event implementation.</p></section></main><footer><div class="wrap foot"><span>&copy; 2026 Adnan Rana. Marketing Data Analyst.</span><span><a href="https://www.linkedin.com/in/adnan3624/">LinkedIn</a> &nbsp; <a href="https://github.com/your-username">GitHub</a> &nbsp; <a href="mailto:adnan3624@gmail.com">Email</a> &nbsp; <a href="tel:+923069098215">+92 306 9098215</a></span></div></footer>
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script><script src="../assets/js/main.js"></script></body></html>

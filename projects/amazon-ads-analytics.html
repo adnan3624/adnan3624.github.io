@@ -1,0 +1,26 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Amazon Advertising Analytics | Adnan Rana</title><meta name="description" content="Campaign, keyword, search term and ASIN-level analysis of Amazon Ads with ACoS, ROAS and negative keyword discovery.">
+<meta property="og:title" content="Amazon Advertising Analytics | Adnan Rana"><meta property="og:description" content="Campaign, keyword, search term and ASIN-level analysis of Amazon Ads with ACoS, ROAS and negative keyword discovery."><meta property="og:type" content="website"><meta property="og:url" content="https://your-username.github.io/portfolio/projects/amazon-ads-analytics.html">
+<link rel="canonical" href="https://your-username.github.io/portfolio/projects/amazon-ads-analytics.html"><link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css"></head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav"><div class="wrap nav-in"><a class="brand" href="../index.html">Adnan Rana</a>
+<button class="burger" aria-label="Toggle menu" aria-expanded="false" aria-controls="menu"><i data-lucide="menu"></i></button>
+<nav id="menu"><a href="../index.html#home">Home</a><a href="../index.html#expertise">Expertise</a><a href="../index.html#projects">Projects</a><a href="../index.html#about">About</a><a href="../index.html#contact">Contact</a>
+<a class="btn small" href="../assets/documents/CV.pdf" download>Download CV</a></nav></div></header><main id="main"><section class="wrap case"><a class="back" href="../index.html#projects">Back to projects</a><h1>Amazon Advertising Analytics</h1><p class="lede">Campaign, keyword, search term and ASIN-level analysis of Amazon Ads with ACoS, ROAS and negative keyword discovery.</p>
+<p class="note">All data on this page is synthetic and illustrative. It demonstrates the method; it is not client data and the figures are not results.</p>
+<h2>Business context</h2><p>A marketplace seller spends on Sponsored Products and Sponsored Brands and needs to know which campaigns, search terms and ASINs earn their spend.</p><h2>Problem statement</h2><p>Amazon reports sales attributed to ads, but there is no customer-level journey as in a DTC store, and ad-attributed sales overlap with organic sales.</p>
+<h2>Data sources</h2><ul><li>Advertising API or console exports: campaign, targeting and search term reports</li><li>Business Reports by ASIN (sessions, units, total sales)</li><li>Product cost and fee data for margin</li></ul><h2>Data architecture</h2><p>Reports are loaded daily into BigQuery, keyed by campaign, ad group, targeting, search term and ASIN. Reconciliation is done at campaign, ASIN and channel level, never by customer.</p>
+<h2>Technical implementation</h2><p>SQL classifies search terms by spend and orders, flags terms with clicks above a threshold and no orders, and joins ad sales to total ASIN sales to estimate ad dependence (TACoS).</p><h2>SQL methodology</h2><pre><code>-- negative keyword candidates (illustrative)
+SELECT campaign, search_term,
+  SUM(clicks) AS clicks, SUM(spend) AS spend, SUM(orders) AS orders
+FROM stg_search_terms
+WHERE report_date &gt;= DATE_SUB(CURRENT_DATE(), INTERVAL 60 DAY)
+GROUP BY 1,2
+HAVING SUM(clicks) &gt;= 20 AND SUM(orders) = 0
+ORDER BY spend DESC;</code></pre>
+<h2>Analytical outputs</h2><ul><li>Search term waste table</li><li>ACoS and ROAS by campaign and match type</li><li>ASIN view: ad sales, total sales, TACoS, contribution margin</li></ul><h2>Key findings</h2><ul><li>In the synthetic data, a small share of search terms holds most zero-order spend, making negative keyword cleanup the fastest lever.</li><li>High ACoS on an ASIN can be acceptable if margin and organic lift support it, so ACoS is read alongside TACoS and margin.</li></ul><h2>Business recommendations</h2><ul><li>Add exact negatives for repeat zero-order terms and review weekly.</li><li>Set ACoS targets per ASIN from margin, not one account-wide number.</li></ul>
+<h2>Limitations and assumptions</h2><p>Marketplace reporting does not expose customer-level data, and attribution windows differ from DTC platforms. Amazon figures should not be compared to GA4 or Meta numbers as if they were measured the same way.</p></section></main><footer><div class="wrap foot"><span>&copy; 2026 Adnan Rana. Marketing Data Analyst.</span><span><a href="https://www.linkedin.com/in/adnan3624/">LinkedIn</a> &nbsp; <a href="https://github.com/your-username">GitHub</a> &nbsp; <a href="mailto:adnan3624@gmail.com">Email</a> &nbsp; <a href="tel:+923069098215">+92 306 9098215</a></span></div></footer>
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script><script src="../assets/js/main.js"></script></body></html>

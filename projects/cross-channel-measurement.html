@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cross-Channel Marketing Performance Measurement | Adnan Rana</title><meta name="description" content="Reconciling Google Ads, Meta, GA4 and Shopify order data in BigQuery to compare ROAS and MER by channel.">
+<meta property="og:title" content="Cross-Channel Marketing Performance Measurement | Adnan Rana"><meta property="og:description" content="Reconciling Google Ads, Meta, GA4 and Shopify order data in BigQuery to compare ROAS and MER by channel."><meta property="og:type" content="website"><meta property="og:url" content="https://your-username.github.io/portfolio/projects/cross-channel-measurement.html">
+<link rel="canonical" href="https://your-username.github.io/portfolio/projects/cross-channel-measurement.html"><link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css"></head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav"><div class="wrap nav-in"><a class="brand" href="../index.html">Adnan Rana</a>
+<button class="burger" aria-label="Toggle menu" aria-expanded="false" aria-controls="menu"><i data-lucide="menu"></i></button>
+<nav id="menu"><a href="../index.html#home">Home</a><a href="../index.html#expertise">Expertise</a><a href="../index.html#projects">Projects</a><a href="../index.html#about">About</a><a href="../index.html#contact">Contact</a>
+<a class="btn small" href="../assets/documents/CV.pdf" download>Download CV</a></nav></div></header><main id="main"><section class="wrap case"><a class="back" href="../index.html#projects">Back to projects</a><h1>Cross-Channel Marketing Performance Measurement</h1><p class="lede">Reconciling Google Ads, Meta, GA4 and Shopify order data in BigQuery to compare ROAS and MER by channel.</p>
+<p class="note">All data on this page is synthetic and illustrative. It demonstrates the method; it is not client data and the figures are not results.</p>
+<h2>Business context</h2><p>A DTC store runs Google and Meta ads. Each platform, GA4 and Shopify reports a different revenue figure, so budget conversations start with an argument about whose number is right.</p><h2>Problem statement</h2><p>Platform ROAS is inflated by overlapping attribution, GA4 undercounts consented traffic, and nobody has a single revenue figure tied to spend.</p>
+<h2>Data sources</h2><ul><li>Google Ads and Meta Ads daily campaign exports (spend, clicks, platform-reported conversions and value)</li><li>GA4 BigQuery export (events_*)</li><li>Shopify orders (order id, net revenue, discounts, refunds, UTM landing data)</li></ul><h2>Data architecture</h2><p>Raw tables land in BigQuery, are standardised in a staging layer (one grain: date x channel x campaign), then joined in a mart that holds spend, platform revenue, GA4 revenue and Shopify revenue side by side.</p>
+<h2>Technical implementation</h2><p>Daily Python loads write raw tables. SQL views map UTM and click-id values to a single channel taxonomy. Orders are the source of truth for revenue; GA4 and platforms are compared against it.</p><h2>SQL methodology</h2><pre><code>-- channel mart (illustrative)
+SELECT d.date, d.channel,
+  SUM(s.spend)                         AS spend,
+  SUM(s.platform_revenue)              AS platform_revenue,
+  SUM(g.ga4_revenue)                   AS ga4_revenue,
+  SUM(o.net_revenue)                   AS order_revenue,
+  SAFE_DIVIDE(SUM(s.platform_revenue), SUM(s.spend)) AS platform_roas,
+  SAFE_DIVIDE(SUM(o.net_revenue), SUM(s.spend))      AS blended_roas
+FROM dim_date_channel d
+LEFT JOIN stg_spend s USING (date, channel)
+LEFT JOIN stg_ga4   g USING (date, channel)
+LEFT JOIN stg_orders o USING (date, channel)
+GROUP BY 1,2;</code></pre>
+<h2>Analytical outputs</h2><ul><li>Daily and weekly channel table with spend, three revenue views and variance</li><li>ROAS by platform versus order-based ROAS</li><li>MER (total net revenue / total ad spend) trend</li></ul><h2>Key findings</h2><ul><li>In this synthetic example, platform-reported revenue sums to more than total orders, which is the classic double-counting signature.</li><li>Variance between GA4 and orders is largest on days with consent or checkout changes, so it is flagged for tracking review before it is read as performance.</li></ul><h2>Business recommendations</h2><ul><li>Judge budget moves on MER and order-based ROAS, using platform ROAS only for in-platform optimisation.</li><li>Investigate channels where platform and order revenue diverge by a stable ratio before shifting spend.</li></ul>
+<h2>Limitations and assumptions</h2><p>Order-to-channel mapping relies on UTMs and click ids, so untagged orders sit in an unattributed bucket. Revenue reconciliation shows where numbers disagree, not which channel caused the sale.</p></section></main><footer><div class="wrap foot"><span>&copy; 2026 Adnan Rana. Marketing Data Analyst.</span><span><a href="https://www.linkedin.com/in/adnan3624/">LinkedIn</a> &nbsp; <a href="https://github.com/your-username">GitHub</a> &nbsp; <a href="mailto:adnan3624@gmail.com">Email</a> &nbsp; <a href="tel:+923069098215">+92 306 9098215</a></span></div></footer>
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script><script src="../assets/js/main.js"></script></body></html>
