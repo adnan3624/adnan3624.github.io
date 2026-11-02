@@ -222,3 +222,56 @@ Static site (HTML, CSS, JS). No build step needed to host.
 ''')
 
 open("assets/documents/.gitkeep","w").write("");open("assets/images/.gitkeep","w").write("")
+
+# ---------- illustrative images (synthetic) ----------
+W,Hh=800,420; C=["#1e56d6","#7ea0ea","#0d1b2e","#b7c4dc"]
+def wrap_svg(title,sub,inner,desc):
+    return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {Hh}" role="img" aria-label="{desc}"><rect width="{W}" height="{Hh}" fill="#fff"/><text x="30" y="38" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="#0d1b2e">{title}</text><text x="30" y="58" font-family="Arial,sans-serif" font-size="12" fill="#556070">{sub}</text>{inner}<text x="{W-30}" y="{Hh-14}" text-anchor="end" font-family="Arial,sans-serif" font-size="11" fill="#556070">Synthetic data for illustration</text></svg>'
+def T(x,y,s,a="middle",sz=12,col="#556070",w=400): return f'<text x="{x}" y="{y}" text-anchor="{a}" font-family="Arial,sans-serif" font-size="{sz}" fill="{col}" font-weight="{w}">{s}</text>'
+def grouped(title,sub,cats,series,vals,ymax,fmt,desc,line=None):
+    x0,x1,y0,y1=70,770,90,340; o=""
+    for i in range(5):
+        y=y1-(y1-y0)*i/4; o+=f'<line x1="{x0}" x2="{x1}" y1="{y}" y2="{y}" stroke="#e3e8f0"/>'+T(x0-8,y+4,fmt.format(ymax*i/4),"end",11)
+    gw=(x1-x0)/len(cats); bw=min(34,(gw-30)/len(series))
+    for ci,c in enumerate(cats):
+        gx=x0+gw*ci+gw/2-bw*len(series)/2
+        for si in range(len(series)):
+            h=(y1-y0)*vals[si][ci]/ymax; o+=f'<rect x="{gx+si*bw:.1f}" y="{y1-h:.1f}" width="{bw-3:.1f}" height="{h:.1f}" fill="{C[si]}"/>'
+        o+=T(x0+gw*ci+gw/2,y1+20,c)
+    if line is not None:
+        y=y1-(y1-y0)*line[0]/ymax; o+=f'<line x1="{x0}" x2="{x1}" y1="{y}" y2="{y}" stroke="#0d1b2e" stroke-dasharray="6 4"/>'+T(x1,y-6,line[1],"end",11,"#0d1b2e",700)
+    if len(series)>1 or series[0]:
+        for si,s in enumerate(series):
+            if s: o+=f'<rect x="{30+si*165}" y="372" width="12" height="12" fill="{C[si]}"/>'+T(48+si*165,383,s,"start")
+    return wrap_svg(title,sub,o,desc)
+imgs={}
+imgs["cross-channel-measurement"]=grouped("Revenue by source and channel","Platform-reported vs GA4 vs orders, thousands of dollars",["Google Shopping","Google Search","Meta Ads"],["Platform-reported","GA4","Orders"],[[120,90,110],[95,72,70],[82,66,58]],160,"{:.0f}","Bar chart: platform-reported revenue is higher than GA4 revenue, which is higher than order revenue, for each channel.")
+imgs["amazon-ads-analytics"]=grouped("ACoS by campaign type","Against a target ACoS of 25 percent",["Auto","Broad","Phrase","Exact","Brand"],[""],[[38,31,26,19,14]],40,"{:.0f}%","Bar chart of ACoS by campaign type with a dashed target line at 25 percent.",line=(25,"Target 25%"))
+imgs["attribution-analysis"]=grouped("Channel credit by attribution model","Share of conversions, percent",["Paid social","Paid search","Email","Organic"],["First touch","Last touch","Linear","Position-based"],[[34,18,6,42],[12,38,22,28],[24,27,15,34],[26,28,14,32]],48,"{:.0f}%","Grouped bar chart showing how channel credit changes between first-touch, last-touch, linear and position-based attribution.")
+steps=[("Item views",10000),("Add to cart",1800),("Begin checkout",900),("Purchase",420)]; o=""
+for i,(n,v) in enumerate(steps):
+    w=620*v/10000+80; y=90+i*66; o+=f'<rect x="30" y="{y}" width="{w:.0f}" height="46" fill="{C[0] if i<3 else C[2]}" opacity="{1-i*0.12}"/>'+T(42,y+28,f"{n}","start",14,"#fff",700)+T(30+w+10,y+28,f"{v:,}"+("" if i==0 else f"  ({v/steps[i-1][1]*100:.0f}% of previous step)"),"start",13,"#0d1b2e",600)
+imgs["ga4-funnel-analysis"]=wrap_svg("Session funnel","GA4 e-commerce events, one month, sessions",o,"Funnel chart from item views through add to cart and checkout to purchase.")
+boxes=["Ad platforms, GA4 export, orders","Python ingestion","BigQuery raw tables","SQL and dbt marts","Validation checks","Power BI and Looker Studio"]; o=""
+for i,b in enumerate(boxes):
+    x=24+i*125; fill="#0d1b2e" if i==3 else "#fff"; col="#fff" if i==3 else "#0d1b2e"
+    o+=f'<rect x="{x}" y="170" width="112" height="80" rx="6" fill="{fill}" stroke="#c9d2e0"/>'
+    ws=b.split(); lines=[" ".join(ws[:len(ws)//2+len(ws)%2])," ".join(ws[len(ws)//2+len(ws)%2:])]
+    for j,l in enumerate(lines):
+        if l: o+=T(x+56,205+j*16,l,"middle",11.5,col,700)
+    if i<5: o+=f'<path d="M{x+112} 210 L{x+125} 210" stroke="#1e56d6" stroke-width="2"/>'
+imgs["reporting-automation"]=wrap_svg("Reporting pipeline","From source extracts to dashboards, with checks before publishing",o,"Pipeline diagram: sources, Python ingestion, BigQuery raw tables, SQL and dbt marts, validation checks, and dashboards.")
+for k,v in imgs.items(): open(f"assets/images/{k}.svg","w").write(v)
+# inject images into pages
+import re
+for c in cases:
+    f=f"projects/{c['f']}.html"; s=open(f).read()
+    if "<figure" not in s:
+        s=s.replace('<h2>Business context</h2>',f'<figure><img src="../assets/images/{c["f"]}.svg" alt="{c["t"]}: illustrative chart using synthetic data" width="800" height="420"><figcaption>Illustrative chart built from synthetic data, not client results.</figcaption></figure><h2>Business context</h2>',1)
+        open(f,"w").write(s)
+s=open("index.html").read()
+for c in cases:
+    s=s.replace(f'<a class="card pj" href="projects/{c["f"]}.html"><h3>',f'<a class="card pj" href="projects/{c["f"]}.html"><img class="thumb" src="assets/images/{c["f"]}.svg" alt="" width="800" height="420" loading="lazy"><h3>',1)
+s=s.replace('aria-label="Profile photo placeholder">Photo</div>','aria-label="Profile photo placeholder">Photo<img src="assets/images/profile.jpg" alt="Portrait of Adnan Rana" onerror="this.remove()"></div>',1)
+open("index.html","w").write(s)
+open("assets/css/style.css","a").write('\n.thumb,figure img{width:100%;height:auto;border:1px solid var(--line);border-radius:6px;display:block}.thumb{margin-bottom:14px}figure{margin:24px 0}figcaption{font-size:.85rem;color:var(--mut);margin-top:6px}.photo{position:relative;overflow:hidden}.photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}\n')
