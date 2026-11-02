@@ -1,6 +1,6 @@
 import os, html
-NAME="Adnan Rana"; EMAIL="adnan3624@gmail.com"; PHONE="+923069098215"; PHONE_D="+92 306 9098215"; LI="https://www.linkedin.com/in/adnan3624/"; GH="https://github.com/your-username"
-SITE="https://your-username.github.io/portfolio"
+NAME="Adnan Rana"; EMAIL="adnan3624@gmail.com"; PHONE="+923069098215"; PHONE_D="+92 306 9098215"; LI="https://www.linkedin.com/in/adnan3624/"; GH="https://github.com/adnan3624"
+SITE="https://adnan3624.github.io"
 H1="Ad platforms, GA4, and sales data rarely agree. I reconcile them and show what is actually driving revenue and where budget should move."
 def head(title,desc,p,path):
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -134,7 +134,7 @@ def svg():
     out=box(400,10,150,50,"Channel performance")+box(400,78,150,50,"Revenue analysis")+box(400,146,150,50,"Profitability")+box(400,214,150,50,"Budget allocation")
     lines="".join(f'<path d="M160 {y} C190 {y},190 136,215 136" class="ln"/>' for y in (46,136,226))+"".join(f'<path d="M345 136 C375 136,375 {y},400 {y}" class="ln"/>' for y in (35,103,171,239))
     return f'<svg viewBox="0 0 560 275" role="img" aria-label="Diagram: advertising platforms, website analytics and e-commerce orders feed a unified measurement layer that produces channel performance, revenue analysis, profitability and budget allocation insights.">{lines}{src}{mid}{out}</svg>'
-svc=[("bar-chart-3","Marketing Analytics","Channel, campaign and keyword efficiency tied to margin, with budget recommendations.",["CAC, CPA, MER, ROAS, ACoS","Contribution margin analysis","Ad spend leakage","Budget allocation"],"SQL, Python, Excel"),
+svc=[("chart-column","Marketing Analytics","Channel, campaign and keyword efficiency tied to margin, with budget recommendations.",["CAC, CPA, MER, ROAS, ACoS","Contribution margin analysis","Ad spend leakage","Budget allocation"],"SQL, Python, Excel"),
 ("git-merge","Measurement and Attribution","Tracking audits and reconciliation of platform, GA4 and order data. Amazon is reconciled at campaign, ASIN and channel level, because marketplace reports do not give customer-level visibility.",["GA4 and GTM audits, Consent Mode","Server-side tagging","Conversion tracking validation","Funnel, cohort and attribution models"],"GA4, GTM, BigQuery"),
 ("flask-conical","Experimentation and Incrementality","Test design that separates causal lift from modelled attribution.",["A/B and geographic experiments","Conversion lift","Significance and confidence intervals","Sizing and test design"],"Python, SQL"),
 ("database","Reporting Infrastructure","Pipelines and dashboards that replace manual reporting.",["SQL and Python pipelines, dbt","BigQuery and GA4 export","Validation and automation","Power BI, Looker Studio"],"BigQuery, Power BI, Looker Studio")]
@@ -166,7 +166,7 @@ os.makedirs("assets/css",exist_ok=True);os.makedirs("assets/js",exist_ok=True);o
 open("assets/css/style.css","w").write(''':root{--bg:#fff;--surf:#f4f6f9;--ink:#0d1b2e;--mut:#556070;--acc:#1e56d6;--line:#dfe4ec}
 *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:72px}
 body{margin:0;font-family:Manrope,system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);background:var(--bg);line-height:1.65}
-.wrap{max-width:1120px;margin:0 auto;padding:0 24px}.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:#fff;padding:8px;z-index:99}
+.wrap{max-width:1120px;margin:0 auto;padding-left:24px;padding-right:24px}.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:#fff;padding:8px;z-index:99}
 a{color:var(--acc)}a:focus-visible,button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
 .nav{position:sticky;top:0;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);z-index:10}
 .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px}.brand{font-weight:800;color:var(--ink);text-decoration:none}
@@ -180,7 +180,7 @@ h1{font-size:clamp(1.9rem,3.6vw,2.7rem);line-height:1.2;letter-spacing:-.02em;ma
 .viz{background:var(--surf);border:1px solid var(--line);border-radius:10px;padding:16px}.viz svg{width:100%;height:auto}
 .bx{fill:#fff;stroke:#c9d2e0}.core{fill:var(--ink)}.ln{fill:none;stroke:#8aa3d6;stroke-width:1.5}
 .t1{font:700 12px Manrope,sans-serif;fill:#0d1b2e}.t2{font:400 11px Manrope,sans-serif;fill:#556070}.t1w{font:700 13px Manrope,sans-serif;fill:#fff}.t2w{font:400 11px Manrope,sans-serif;fill:#c8d4ee}
-section{padding:64px 0}.hero{padding:72px 24px}.band{background:var(--surf)}
+section{padding:64px 0}.hero{padding-top:72px;padding-bottom:72px}.band{background:var(--surf)}
 .grid4{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:24px;box-shadow:0 1px 2px rgba(13,27,46,.05);text-decoration:none;color:var(--ink);display:block}
 .card ul,.case ul{padding-left:18px;color:var(--mut)}.card svg{color:var(--acc)}.tech{font-size:.85rem;color:var(--mut);border-top:1px solid var(--line);padding-top:10px}
@@ -206,7 +206,7 @@ open("README.md","w").write(f'''# Marketing Data Analyst Portfolio
 Static site (HTML, CSS, JS). No build step needed to host.
 
 ## Before publishing
-1. Search and replace `Your Name`, `you@example.com`, the LinkedIn and GitHub URLs, and `https://your-username.github.io/portfolio` (also in sitemap.xml and robots.txt).
+1. Search and replace `Your Name`, `you@example.com`, the LinkedIn and GitHub URLs, and `https://adnan3624.github.io` (also in sitemap.xml and robots.txt).
 2. Put your CV at `assets/documents/CV.pdf`.
 3. Replace the profile photo placeholder in the About section with an image in `assets/images/`.
 4. Confirm the three results on the homepage before sharing.
@@ -215,8 +215,10 @@ Static site (HTML, CSS, JS). No build step needed to host.
 1. On github.com click New repository, name it `portfolio` (or `your-username.github.io` for a root URL), set it Public, create it.
 2. Upload every file and folder from this project (Add file > Upload files), then commit to `main`.
 3. Open Settings > Pages. Under Build and deployment choose Deploy from a branch, branch `main`, folder `/ (root)`, Save.
-4. After about a minute the site is live at `https://your-username.github.io/portfolio/`. Open every page and the CV download.
+4. After about a minute the site is live at `https://adnan3624.github.io/`. Open every page and the CV download.
 5. To update: edit files on GitHub or push from Git. Pages redeploys on each commit.
 
 `build.py` regenerates all HTML (edit the content at the top, run `python3 build.py`).
 ''')
+
+open("assets/documents/.gitkeep","w").write("");open("assets/images/.gitkeep","w").write("")
